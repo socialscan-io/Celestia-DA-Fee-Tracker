@@ -1,6 +1,12 @@
-# create-svelte
+## Manta DA Fee Tracker
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+# SocialScan
+Next-Gen Blockchain Explorer: Web3 Entry Hub for the Masses
+# Manta Pacific
+The first EVM-native modular execution layer for wide ZK applications adoption, with Manta’s universal circuit and zk interface.
+Manta Pacific offers exceptional scalability and lower transaction costs through Celestia and Caldera's OP Stack Rollup solution.
+
+The project uses Svelte framework. Check everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
 
 ## Creating a project
 
