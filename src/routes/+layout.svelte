@@ -1,5 +1,5 @@
 <script>
-	import W3WLogo from '$lib/assets/w3w-logo.png';
+	import Logo from '$lib/assets/social-scan-logo.png';
 	import '../app.css';
 </script>
 
@@ -23,8 +23,8 @@
 					<div class="flex flex-wrap items-center justify-start gap-x-8 gap-y-5 sm:gap-x-2">
 						<span>
 							Built by
-							<a href="https://w3w.ai">
-								<img class="inline-block h-3" src={W3WLogo} alt="w3w.ai" />
+							<a href="https://socialscan.io">
+								<img class="inline-block h-6" src={Logo} alt="w3w.ai" />
 							</a>
 						</span>
 
