@@ -1,8 +1,8 @@
 ## Manta DA Fee Tracker
 
-# SocialScan
+### Built by SocialScan
 Next-Gen Blockchain Explorer: Web3 Entry Hub for the Masses
-# Manta Pacific
+### Powerered by Manta Pacific
 The first EVM-native modular execution layer for wide ZK applications adoption, with Manta’s universal circuit and zk interface.
 Manta Pacific offers exceptional scalability and lower transaction costs through Celestia and Caldera's OP Stack Rollup solution.
 
