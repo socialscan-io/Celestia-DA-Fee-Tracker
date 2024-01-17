@@ -6,19 +6,8 @@ Next-Gen Blockchain Explorer: Web3 Entry Hub for the Masses
 The first EVM-native modular execution layer for wide ZK applications adoption, with Manta’s universal circuit and zk interface.
 Manta Pacific offers exceptional scalability and lower transaction costs through Celestia and Caldera's OP Stack Rollup solution.
 
-The project uses Svelte framework. Check everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
 
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+The project uses the Svelte framework. Check everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
 
 ## Developing
 
