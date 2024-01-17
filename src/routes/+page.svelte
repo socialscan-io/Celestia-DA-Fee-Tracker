@@ -347,7 +347,7 @@
 
 	<div class="my-5">
 		<div class="mb-2 font-semibold">Cumulative</div>
-		<div class="text-main mb-2 text-sm">
+		<div class="mb-2 text-sm text-main">
 			Integrated with Celestia since Dec. 16, 2023, calculations start from this date.
 		</div>
 		<div class="grid grid-cols-1 gap-5 text-left md:grid-cols-2 lg:grid-cols-4">
@@ -433,7 +433,7 @@
 				<Input
 					type="number"
 					placeholder="Transaction Count"
-					class="focus:border-main h-10 w-[300px] rounded-full  border-[rgba(0,0,0,0.3)] bg-transparent text-black"
+					class="h-10 w-[300px] rounded-full border-[rgba(0,0,0,0.3)]  bg-transparent text-black focus:border-main"
 					bind:value={transactionCount}
 					on:input={handleCalculateChange}
 				/>
