@@ -191,8 +191,6 @@
 	});
 
 	onMount(() => {
-		isChartTransitionalPhase = dayjs().diff('2023-12-16', 'day') < 30;
-
 		const gradient = container.getContext('2d').createLinearGradient(0, 0, 0, 550);
 		gradient.addColorStop(0, '#6AD9B6');
 		gradient.addColorStop(1, 'rgba(133, 193, 233, 0)');
@@ -217,7 +215,7 @@
 				labels: labels,
 				datasets: [
 					{
-						label: isChartTransitionalPhase ? 'L1 Data Fee (USD)' : 'Estimated L1 Data Fee (USD)',
+						label: 'L1 Data Fee (USD)',
 						data: l1Values,
 						backgroundColor: (ctx) => {
 							if (ctx.dataIndex === l1Values.length - 1) {
@@ -230,11 +228,7 @@
 						tension: 0,
 						borderWidth: 2,
 						segment: {
-							borderDash: (ctx) => {
-								const isSplitDashed = ctx.p1DataIndex < splitIndex || splitIndex === -1;
-								const isLastData = ctx.p1DataIndex === l1Values.length - 1;
-								return !isSplitDashed || isLastData ? [5, 5] : undefined;
-							},
+							borderDash: [5, 5],
 							borderColor: (ctx) => {
 								if (ctx.p1DataIndex === data.data.length - 1) {
 									return '#dddddd';
@@ -245,9 +239,7 @@
 						}
 					},
 					{
-						label: isChartTransitionalPhase
-							? 'Celestia DA Fee (USD)'
-							: 'Current Celestia DA Fee (USD)',
+						label: 'Celestia DA Fee (USD)',
 						data: expectedValues,
 						backgroundColor: (ctx) => {
 							if (ctx.dataIndex === l1Values.length - 1) {
@@ -261,9 +253,8 @@
 						borderWidth: 2,
 						segment: {
 							borderDash: (ctx) => {
-								const isSplitDashed = ctx.p1DataIndex < splitIndex || splitIndex === -1;
 								const isLastData = ctx.p1DataIndex === expectedValues.length - 1;
-								return isSplitDashed || isLastData ? [5, 5] : undefined;
+								return isLastData ? [5, 5] : undefined;
 							},
 							borderColor: (ctx) => {
 								if (ctx.p1DataIndex === data.data.length - 1) {
