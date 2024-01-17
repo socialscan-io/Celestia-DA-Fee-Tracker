@@ -9,19 +9,19 @@
 	import { Input, Label, Select, Spinner, Tooltip } from 'flowbite-svelte';
 
 	import { get } from '$lib/api';
-	import dayjs from 'dayjs';
 	import { onMount } from 'svelte';
 	import type { CalculatedDAFee, DaFeeTracker } from './+page';
 
+	import InfoCircle from '$lib/assets/info-circle.svg';
+
 	export let data: DaFeeTracker;
+
 	let container: any;
 
 	let transactionType: number;
 	let transactionCount: number;
 
 	let calculating = false;
-
-	let isChartTransitionalPhase = false;
 
 	const transactionTypes = [
 		{ name: 'Mixed of Common Blockchain Transactions', value: 0 },
@@ -199,10 +199,6 @@
 		const l1Values: any[] = [];
 		const expectedValues: any[] = [];
 
-		const splitIndex = data.data.findIndex(
-			(item) => dayjs(item.date).format('YYYY-MM-DD') === '2023-12-16'
-		);
-
 		data.data.forEach((item) => {
 			labels.push(item.date);
 			l1Values.push(item.transaction_fee_on_l1_usd);
@@ -215,7 +211,7 @@
 				labels: labels,
 				datasets: [
 					{
-						label: 'L1 Data Fee (USD)',
+						label: 'Estimated L1 Data Fee (USD)',
 						data: l1Values,
 						backgroundColor: (ctx) => {
 							if (ctx.dataIndex === l1Values.length - 1) {
@@ -361,10 +357,6 @@
 				>
 					<div class="text-xs">
 						{item.name}
-						{#if item.tooltip}
-							<!-- <Icon name="info-circle" class="inline-block h-4 w-4 align-top text-gray-500" /> -->
-							<Tooltip><span class="text-xs">{item.tooltip}</span></Tooltip>
-						{/if}
 					</div>
 					<div class=" text-base font-medium">
 						<span style={'color:' + (item.color || 'inherit')}>{item.value}</span>
@@ -386,10 +378,6 @@
 				>
 					<div class="text-xs">
 						{item.name}
-						{#if item.tooltip}
-							<!-- <Icon name="info-circle" class="inline-block h-4 w-4 align-top text-gray-500" /> -->
-							<Tooltip><span class="text-xs">{item.tooltip}</span></Tooltip>
-						{/if}
 					</div>
 					<div class=" text-base font-medium">
 						<span style={'color:' + (item.color || 'inherit')}>{item.value}</span>
@@ -403,20 +391,16 @@
 	</div>
 
 	<div class="relative h-[300px] rounded-lg bg-white px-2.5 shadow-md md:h-[500px]">
-		{#if isChartTransitionalPhase}
-			<div class="absolute right-2 top-2">
-				<!-- <Icon name="info-circle" class="h-4 w-4 cursor-pointer" /> -->
-				<Tooltip>
-					<div class="w-[340px] text-xs">
-						The solid line represents the actual DA fee over time.
-					</div>
+		<div class="absolute right-2 top-2">
+			<img src={InfoCircle} class="h-4 w-4" alt="" />
+			<Tooltip>
+				<div class="w-[340px] text-xs">The solid line represents the actual DA fee over time.</div>
 
-					<div class="w-[340px] text-xs">
-						The dashed line represents the estimated DA fee over time.
-					</div>
-				</Tooltip>
-			</div>
-		{/if}
+				<div class="w-[340px] text-xs">
+					The dashed line represents the estimated DA fee over time.
+				</div>
+			</Tooltip>
+		</div>
 		<canvas bind:this={container} />
 	</div>
 
