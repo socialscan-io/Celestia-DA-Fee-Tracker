@@ -13,7 +13,7 @@ OP Stack --- The OP Stack is the standardized, shared, and open-source developme
 ### Example DA Fee tracker: https://manta.socialscan.io/da-fee-tracker
 ### Powered by Manta Pacific
 
-The first EVM-native modular execution layer for wide ZK applications adoption, with Manta’s universal circuit and zk interface.
+The first EVM-native modular execution layer for wide ZK applications adoption, with Manta’s universal circuit and ZK interface.
 Manta Pacific offers exceptional scalability and lower transaction costs through Celestia and Caldera's OP Stack Rollup solution.
 
 
