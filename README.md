@@ -8,7 +8,11 @@ You can find us here: https://twitter.com/socialscan_io
 ### Powered by OP Stack & Celestia
 Celestia --- The first modular blockchain network.
 
+Find Celestia here: https://twitter.com/CelestiaOrg
+
 OP Stack --- The OP Stack is the standardized, shared, and open-source development stack that powers Optimism, maintained by the Optimism Collective.
+
+Find Optimism here: https://twitter.com/Optimism
 
 ### Example DA Fee tracker: https://manta.socialscan.io/da-fee-tracker
 ### Powered by Manta Pacific
