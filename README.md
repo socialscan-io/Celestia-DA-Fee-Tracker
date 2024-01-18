@@ -2,13 +2,16 @@
 
 ### Built by SocialScan
 Next-Gen Blockchain Explorer: AI-empowered Web3 Discovery Hub.
+
 You can find us here: https://twitter.com/socialscan_io 
 
 ### Powered by OP Stack & Celestia
-Celestia --- The first modular blockchain network
+Celestia --- The first modular blockchain network.
+
 OP Stack --- The OP Stack is the standardized, shared, and open-source development stack that powers Optimism, maintained by the Optimism Collective.
 
 ### Example DA Fee tracker: https://manta.socialscan.io/da-fee-tracker
+
 ### Powered by Manta Pacific
 The first EVM-native modular execution layer for wide ZK applications adoption, with Manta’s universal circuit and zk interface.
 Manta Pacific offers exceptional scalability and lower transaction costs through Celestia and Caldera's OP Stack Rollup solution.
