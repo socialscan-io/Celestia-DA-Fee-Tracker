@@ -1,8 +1,8 @@
 ## OP Stack & Celestia DA Fee Tracker
 
 ### Built by SocialScan
-Next-Gen Blockchain Explorer: AI-empowered Web3 Discovery Hub
-Find us here: https://twitter.com/socialscan_io 
+Next-Gen Blockchain Explorer: AI-empowered Web3 Discovery Hub.
+You can find us here: https://twitter.com/socialscan_io 
 
 ### Powered by OP Stack & Celestia
 Celestia --- The first modular blockchain network
