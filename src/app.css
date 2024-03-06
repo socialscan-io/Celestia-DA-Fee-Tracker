@@ -7,6 +7,5 @@
 
 html,
 body {
-	background: #f4f6fc;
 	@apply font-roboto;
 }

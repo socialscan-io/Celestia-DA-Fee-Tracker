@@ -26,6 +26,8 @@ export default {
             colors: {
                 // flowbite-svelte
                 main: '#4d2be5',
+                success: '#00C9A7',
+                error: '#EB5757',
                 primary: {
                     50: '#4d2be5',
                     100: '#4d2be5',

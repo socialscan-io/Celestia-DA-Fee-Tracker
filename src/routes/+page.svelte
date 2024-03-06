@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import {
 		createDebouncedRequest,
 		formatBytes,
@@ -10,8 +11,9 @@
 
 	import { get } from '$lib/api';
 	import { onMount } from 'svelte';
-	import type { CalculatedDAFee, DaFeeTracker } from './+page';
+	import { fetchData, type CalculatedDAFee, type DaFeeTracker } from './page';
 
+	import CelestiaPng from '$lib/assets/celestia.png';
 	import InfoCircle from '$lib/assets/info-circle.svg';
 
 	export let data: DaFeeTracker;
@@ -22,6 +24,49 @@
 	let transactionCount: number;
 
 	let calculating = false;
+	// 'all', 'orderly', 'aevo', 'lyra', 'pgn', 'hypr', 'ancient8'
+	const chainList = [
+		{
+			name: 'Overview',
+			id: 'all',
+			img: null
+		},
+		{
+			name: 'Manta Pacific',
+			id: 'manta-pacific',
+			img: '/images/manta-pacific.png'
+		},
+		{
+			name: 'Orderly',
+			id: 'orderly',
+			img: '/images/orderly.png'
+		},
+		{
+			name: 'Aevo',
+			id: 'aevo',
+			img: '/images/aevo.png'
+		},
+		{
+			name: 'Lyra',
+			id: 'lyra',
+			img: '/images/lyra.png'
+		},
+		{
+			name: 'Public Good Networks',
+			id: 'pgn',
+			img: '/images/public-good-networks.png'
+		},
+		{
+			name: 'Hypr',
+			id: 'hypr',
+			img: '/images/hypr.png'
+		},
+		{
+			name: 'Ancient8',
+			id: 'ancient8',
+			img: '/images/ancient8.png'
+		}
+	];
 
 	const transactionTypes = [
 		{ name: 'Mixed of Common Blockchain Transactions', value: 0 },
@@ -32,6 +77,7 @@
 		{ name: 'ERC721 Transfer', value: 5 },
 		{ name: 'Contract Creation', value: 6 }
 	];
+
 	const transactionTypeDesc = [
 		[
 			'- Calculated based on all transactions on the Manta Pacific Chain.',
@@ -126,7 +172,11 @@
 		}
 	];
 
-	let myChart: any;
+	let myChart: Chart;
+
+	let fetchingDataChain: string | null;
+
+	let selectedChain: string = $page.url.searchParams.get('chain') || 'all';
 
 	const debounceCalculateData = createDebouncedRequest<{
 		transactionCount: any;
@@ -147,7 +197,7 @@
 		calculating = true;
 
 		return get<CalculatedDAFee>(
-			`/v1/explorer/da_fee_calculate?transaction_count=${query.transactionCount}&transaction_type=${query.transactionType}`,
+			`/v1/celestia/da_fee_calculate?transaction_count=${query.transactionCount}&transaction_type=${query.transactionType}`,
 			{ signal }
 		)
 			.then((data) => {
@@ -158,7 +208,26 @@
 			.finally(() => (calculating = false));
 	}
 
-	onMount(() => {
+	function fetchDataByChain(chainId: any) {
+		if (fetchingDataChain) return;
+
+		selectedChain = chainId;
+
+		const newUrl = new URL($page.url);
+		newUrl.searchParams.set('chain', chainId);
+		window.history.pushState({}, '', newUrl.toString());
+
+		fetchingDataChain = chainId;
+		fetchData({ fetch, chain: chainId })
+			.then((res) => {
+				data = res;
+				handleMetrics();
+				handleChartData();
+			})
+			.finally(() => (fetchingDataChain = null));
+	}
+
+	function handleMetrics() {
 		const totalSavingPercent =
 			((data.metrics.total_l1_da_fee_usd - data.metrics.total_celestia_da_fee_usd) /
 				data.metrics.total_l1_da_fee_usd) *
@@ -188,9 +257,9 @@
 			);
 		yesterdayCards[2].value = formatNumberToKMB(data.metrics.latest_transaction_count);
 		yesterdayCards[3].value = formatBytes(data.metrics.latest_data_size);
-	});
+	}
 
-	onMount(() => {
+	function handleChartData() {
 		const gradient = container.getContext('2d').createLinearGradient(0, 0, 0, 550);
 		gradient.addColorStop(0, '#6AD9B6');
 		gradient.addColorStop(1, 'rgba(133, 193, 233, 0)');
@@ -205,141 +274,182 @@
 			expectedValues.push(item.estimate_celestia_da_fee_usd);
 		});
 
-		myChart = new Chart(container, {
-			type: 'line',
-			data: {
-				labels: labels,
-				datasets: [
-					{
-						label: 'Estimated L1 Data Fee (USD)',
-						data: l1Values,
-						backgroundColor: (ctx) => {
-							if (ctx.dataIndex === l1Values.length - 1) {
-								return '#dddddd';
-							}
+		if (myChart) {
+			myChart.data.labels = labels;
+			myChart.data.datasets[0].data = l1Values;
+			myChart.data.datasets[1].data = expectedValues;
 
-							return '#766FFA';
-						},
-						fill: false,
-						tension: 0,
-						borderWidth: 2,
-						segment: {
-							borderDash: [5, 5],
-							borderColor: (ctx) => {
-								if (ctx.p1DataIndex === data.data.length - 1) {
+			myChart.update();
+		} else {
+			myChart = new Chart(container, {
+				type: 'line',
+				data: {
+					labels: labels,
+					datasets: [
+						{
+							label: 'Estimated L1 Data Fee (USD)',
+							data: l1Values,
+							backgroundColor: (ctx) => {
+								if (ctx.dataIndex === l1Values.length - 1) {
 									return '#dddddd';
 								}
 
 								return '#766FFA';
-							}
-						}
-					},
-					{
-						label: 'Celestia DA Fee (USD)',
-						data: expectedValues,
-						backgroundColor: (ctx) => {
-							if (ctx.dataIndex === l1Values.length - 1) {
-								return '#dddddd';
-							}
-
-							return '#00B573';
-						},
-						fill: false,
-						tension: 0.1,
-						borderWidth: 2,
-						segment: {
-							borderDash: (ctx) => {
-								const isLastData = ctx.p1DataIndex === expectedValues.length - 1;
-								return isLastData ? [5, 5] : undefined;
 							},
-							borderColor: (ctx) => {
-								if (ctx.p1DataIndex === data.data.length - 1) {
-									return '#cccccc';
+							fill: false,
+							tension: 0,
+							borderWidth: 2,
+							segment: {
+								borderDash: [5, 5],
+								borderColor: (ctx) => {
+									if (ctx.p1DataIndex === data.data.length - 1) {
+										return '#dddddd';
+									}
+
+									return '#766FFA';
+								}
+							}
+						},
+						{
+							label: 'Celestia DA Fee (USD)',
+							data: expectedValues,
+							backgroundColor: (ctx) => {
+								if (ctx.dataIndex === l1Values.length - 1) {
+									return '#dddddd';
 								}
 
 								return '#00B573';
+							},
+							fill: false,
+							tension: 0.1,
+							borderWidth: 2,
+							segment: {
+								borderDash: (ctx) => {
+									const isLastData = ctx.p1DataIndex === expectedValues.length - 1;
+									return isLastData ? [5, 5] : undefined;
+								},
+								borderColor: (ctx) => {
+									if (ctx.p1DataIndex === data.data.length - 1) {
+										return '#cccccc';
+									}
+
+									return '#00B573';
+								}
 							}
 						}
-					}
-				]
-			},
-			options: {
-				responsive: true,
-				maintainAspectRatio: false,
-				animations: {},
-				transitions: {
-					zoom: {
-						animation: {
-							duration: 1000,
-							easing: 'easeOutCubic'
-						}
-					}
+					]
 				},
-				scales: {
-					x: {
-						grid: {
-							display: false
-						},
-						border: {
-							display: false
-						},
-						ticks: {
-							maxRotation: 0,
-							minRotation: 0,
-							maxTicksLimit: 8,
-							autoSkip: true
+				options: {
+					responsive: true,
+					maintainAspectRatio: false,
+					animations: {},
+					transitions: {
+						zoom: {
+							animation: {
+								duration: 1000,
+								easing: 'easeOutCubic'
+							}
 						}
 					},
-					y: {
-						type: 'logarithmic',
-						grid: {},
-						ticks: {
-							maxTicksLimit: 6,
-							callback: (value) => formatNumberToKMB(Number(value), 1)
+					scales: {
+						x: {
+							grid: {
+								display: false
+							},
+							border: {
+								display: false
+							},
+							ticks: {
+								maxRotation: 0,
+								minRotation: 0,
+								maxTicksLimit: 8,
+								autoSkip: true
+							}
 						},
-						border: {
-							display: false,
-							dash: [5, 5, 5]
+						y: {
+							type: 'logarithmic',
+							grid: {},
+							ticks: {
+								maxTicksLimit: 6,
+								callback: (value) => formatNumberToKMB(Number(value), 1)
+							},
+							border: {
+								display: false,
+								dash: [5, 5, 5]
+							}
 						}
-					}
-				},
-				elements: {
-					point: {
-						radius: (ctx) => (ctx.dataIndex === data.data.length - 1 ? 3 : 0)
-					}
-				},
-				layout: {
-					padding: {
-						top: 10,
-						bottom: 20,
-						left: 20,
-						right: 20
-					}
-				},
+					},
+					elements: {
+						point: {
+							radius: (ctx) => (ctx.dataIndex === data.data.length - 1 ? 3 : 0)
+						}
+					},
+					layout: {
+						padding: {
+							top: 10,
+							bottom: 20,
+							left: 20,
+							right: 20
+						}
+					},
 
-				plugins: {
-					legend: {
-						display: true,
-						labels: {
-							usePointStyle: false,
-							boxHeight: 2
+					plugins: {
+						legend: {
+							display: true,
+							labels: {
+								usePointStyle: false,
+								boxHeight: 2
+							}
+						},
+						title: {
+							display: false
+						},
+						tooltip: {
+							enabled: true,
+							mode: 'index',
+							intersect: false
 						}
-					},
-					title: {
-						display: false
-					},
-					tooltip: {
-						enabled: true,
-						mode: 'index',
-						intersect: false
 					}
 				}
-			}
-		});
-	});
+			});
+		}
+	}
+
+	onMount(() => handleMetrics());
+
+	onMount(() => handleChartData());
 </script>
 
 <div>
+	<div class="mb-5">
+		<h1 class="text-xl font-medium">Select Chain</h1>
+		<div
+			class="mt-2 flex cursor-pointer items-center justify-start gap-x-5 overflow-x-auto whitespace-nowrap"
+		>
+			{#each chainList as chain}
+				<button
+					class="{fetchingDataChain ? 'cursor-not-allowed ' : 'cursor-pointer '} {selectedChain ===
+					chain.id
+						? 'border-[#7B2BF9] bg-white'
+						: 'border-[#F5F5F5] bg-[#F5F5F5]'} relative flex min-w-fit items-center justify-start gap-x-2 rounded-full border px-2.5 py-2 transition-all hover:bg-white hover:shadow-sm"
+					on:click={() => fetchDataByChain(chain.id)}
+				>
+					{#if chain.img}
+						<img src={chain.img} alt={chain.name} class="h-6 w-6 rounded-full" />
+					{/if}
+					<span>{chain.name}</span>
+					{#if fetchingDataChain === chain.id}
+						<div
+							class="absolute left-0 top-0 flex h-full w-full items-center justify-center rounded-full bg-white bg-opacity-90"
+						>
+							<Spinner size="5" color="purple" />
+						</div>
+					{/if}
+				</button>
+			{/each}
+		</div>
+	</div>
+
 	<div class="flex flex-wrap items-center justify-between gap-2">
 		<h1 class="text-xl font-medium">DA Fee Tracker</h1>
 		<span class="text-sm text-black text-opacity-50">Last Updated: {data.last_updated_at}</span>
@@ -347,23 +457,31 @@
 
 	<div class="my-5">
 		<div class="mb-2 font-semibold">Cumulative</div>
-		<div class="mb-2 text-sm text-main">
-			Integrated with Celestia since Dec. 16, 2023, calculations start from this date.
-		</div>
+
 		<div class="grid grid-cols-1 gap-5 text-left md:grid-cols-2 lg:grid-cols-4">
-			{#each cumulativeCards as item}
+			{#each cumulativeCards as item, i}
 				<div
-					class="flex flex-col items-start justify-center gap-y-2.5 rounded-lg bg-white p-4 shadow-md"
+					class="{i <= 1
+						? 'fee-related'
+						: ''} relative flex flex-col items-start justify-center gap-y-2.5 rounded-lg border border-[#E6EBEF] p-4"
 				>
 					<div class="text-xs">
 						{item.name}
 					</div>
-					<div class=" text-base font-medium">
+					<div class="text-base font-medium">
 						<span style={'color:' + (item.color || 'inherit')}>{item.value}</span>
 						{#if item.percent}
 							<span style="color:{item.percentColor}">(-{item.percent})</span>
 						{/if}
 					</div>
+
+					{#if i <= 1}
+						<img
+							src={CelestiaPng}
+							class="absolute right-0 top-0 h-full w-auto p-2 opacity-20"
+							alt=""
+						/>
+					{/if}
 				</div>
 			{/each}
 		</div>
@@ -372,9 +490,11 @@
 	<div class="my-5">
 		<div class="mb-2 font-semibold">Yesterday</div>
 		<div class="grid grid-cols-1 gap-5 text-left md:grid-cols-2 lg:grid-cols-4">
-			{#each yesterdayCards as item}
+			{#each yesterdayCards as item, i}
 				<div
-					class="flex flex-col items-start justify-center gap-y-2.5 rounded-lg bg-white p-4 shadow-md"
+					class="{i <= 1
+						? 'fee-related'
+						: ''} relative flex flex-col items-start justify-center gap-y-2.5 rounded-lg border border-[#E6EBEF] p-4"
 				>
 					<div class="text-xs">
 						{item.name}
@@ -385,12 +505,20 @@
 							<span style="color:{item.percentColor}">(-{item.percent})</span>
 						{/if}
 					</div>
+
+					{#if i <= 1}
+						<img
+							src={CelestiaPng}
+							class="absolute right-0 top-0 h-full w-auto p-2 opacity-20"
+							alt=""
+						/>
+					{/if}
 				</div>
 			{/each}
 		</div>
 	</div>
 
-	<div class="relative h-[300px] rounded-lg bg-white px-2.5 shadow-md md:h-[500px]">
+	<div class="relative h-[300px] rounded-lg border border-[#E6EBEF] px-2.5 md:h-[500px]">
 		<div class="absolute right-2 top-2">
 			<img src={InfoCircle} class="h-4 w-4" alt="" />
 			<Tooltip>
@@ -409,7 +537,7 @@
 	<div class="my-5">
 		<div class="mb-2 font-semibold">Input</div>
 		<div
-			class="flex flex-col items-start justify-center gap-y-2.5 rounded-lg bg-white p-4 shadow-md"
+			class="flex flex-col items-start justify-center gap-y-2.5 rounded-lg border border-[#E6EBEF] p-4"
 		>
 			<Label>
 				<div class="mb-2">Transaction Type</div>
@@ -452,7 +580,7 @@
 		<div class="grid grid-cols-1 gap-5 text-left md:grid-cols-2 lg:grid-cols-4">
 			{#each calculatedCards as item}
 				<div
-					class="flex flex-col items-start justify-center gap-y-2.5 rounded-lg bg-white p-4 shadow-md"
+					class="flex flex-col items-start justify-center gap-y-2.5 rounded-lg border border-[#E6EBEF] p-4"
 				>
 					<div class="text-xs">
 						{item.name}
@@ -469,3 +597,10 @@
 		<p class="mb-2">* L1 DA fee estimation is based on gas fee = 20 gwei and current ETH price</p>
 	</div>
 </div>
+
+<style>
+	.fee-related {
+		border: 1px solid #dec9ff;
+		background: linear-gradient(180deg, rgba(123, 43, 249, 0.05) 0%, rgba(123, 43, 249, 0) 123.3%);
+	}
+</style>
