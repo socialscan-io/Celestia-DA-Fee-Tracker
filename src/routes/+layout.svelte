@@ -14,7 +14,7 @@
 			stats = {
 				...data,
 				native_token_price_diff: new BigNumber(data.native_token_price_diff)
-					.multipliedBy(1040)
+					.multipliedBy(10430)
 					.toNumber()
 			};
 		})
