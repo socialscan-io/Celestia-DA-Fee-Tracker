@@ -33,7 +33,7 @@
 			<div class="flex w-full flex-wrap items-center justify-between gap-x-5 gap-y-5">
 				<div class="flex items-center justify-start gap-x-2">
 					<img src={Celestia} class="h-10 w-10" alt="" />
-					<span class=" text-lg font-bold">Celestia Agent</span>
+					<span class=" text-lg font-bold">Celestia</span>
 				</div>
 
 				<div class="flex items-center justify-start gap-x-2.5 text-xs font-medium">
