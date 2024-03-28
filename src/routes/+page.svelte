@@ -118,13 +118,13 @@
 			percentColor: import.meta.env.VITE_MAIN_COLOR
 		},
 		{
-			name: 'Estimated Savings',
+			name: 'Estimated L1 DA Fee (Calldata)',
 			value: '--',
 			tooltip: '',
 			color: import.meta.env.VITE_MAIN_COLOR
 		},
 		{
-			name: '4844',
+			name: 'Estimated L1 DA Fee (Blobs)',
 			value: '--',
 			tooltip: '',
 			color: import.meta.env.VITE_MAIN_COLOR
@@ -148,13 +148,13 @@
 			percentColor: import.meta.env.VITE_MAIN_COLOR
 		},
 		{
-			name: 'Estimated Savings',
+			name: 'Estimated L1 DA Fee (Calldata)',
 			value: '--',
 			tooltip: '',
 			color: import.meta.env.VITE_MAIN_COLOR
 		},
 		{
-			name: '4844',
+			name: 'Estimated L1 DA Fee (Blobs)',
 			value: '--',
 			tooltip: '',
 			color: import.meta.env.VITE_MAIN_COLOR
@@ -175,7 +175,11 @@
 			value: '--'
 		},
 		{
-			name: 'Estimated L1 DA Fee',
+			name: 'Estimated L1 DA Fee (Calldata)',
+			value: '--'
+		},
+		{
+			name: 'Estimated L1 DA Fee (Blobs)',
 			value: '--'
 		},
 		{
@@ -215,7 +219,8 @@
 			.then((data) => {
 				calculatedCards[0].value = formatBytes(data.estimate_data_size);
 				calculatedCards[1].value = '$ ' + formatNumber(data.estimate_l1_da_fee_usd, 2);
-				calculatedCards[2].value = '$ ' + formatNumber(data.estimate_celestia_da_fee_usd, 2);
+				calculatedCards[2].value = '$ ' + formatNumber(data.estimate_l1_eip_4844_da_fee_usd, 2);
+				calculatedCards[3].value = '$ ' + formatNumber(data.estimate_celestia_da_fee_usd, 2);
 			})
 			.finally(() => (calculating = false));
 	}
@@ -247,9 +252,7 @@
 
 		cumulativeCards[0].value = '$ ' + formatNumber(data.metrics.total_celestia_da_fee_usd, 2);
 		cumulativeCards[0].percent = formatNumber(totalSavingPercent, 2) + '%';
-		cumulativeCards[1].value =
-			'$ ' +
-			formatNumber(data.metrics.total_l1_da_fee_usd - data.metrics.total_celestia_da_fee_usd, 2);
+		cumulativeCards[1].value = '$ ' + formatNumber(data.metrics.total_celestia_da_fee_usd, 2);
 		cumulativeCards[2].value = '$ ' + formatNumber(data.metrics.total_l1_eip_4844_da_fee_usd, 2);
 		cumulativeCards[3].value = formatNumberToKMB(data.metrics.total_transaction_count);
 		cumulativeCards[4].value = formatBytes(data.metrics.total_data_size);
@@ -263,11 +266,7 @@
 			'$ ' + formatNumber(data.metrics.latest_estimate_celestia_da_fee_usd, 2);
 		yesterdayCards[0].percent = formatNumber(yesterdaySavingPercent, 2) + '%';
 		yesterdayCards[1].value =
-			'$ ' +
-			formatNumber(
-				data.metrics.latest_l1_da_fee_usd - data.metrics.latest_estimate_celestia_da_fee_usd,
-				2
-			);
+			'$ ' + formatNumber(data.metrics.latest_estimate_celestia_da_fee_usd, 2);
 		yesterdayCards[2].value = '$ ' + formatNumber(data.metrics.latest_l1_eip_4844_da_fee_usd, 2);
 		yesterdayCards[3].value = formatNumberToKMB(data.metrics.latest_transaction_count);
 		yesterdayCards[4].value = formatBytes(data.metrics.latest_data_size);
@@ -304,7 +303,7 @@
 					labels: labels,
 					datasets: [
 						{
-							label: 'Estimated L1 Data Fee (USD)',
+							label: 'Estimated L1 DA Fee with Calldata (USD)',
 							data: l1Values,
 							backgroundColor: (ctx) => {
 								if (ctx.dataIndex === l1Values.length - 1) {
@@ -355,7 +354,7 @@
 							}
 						},
 						{
-							label: '4844 (USD)',
+							label: 'Estimated L1 DA Fee with Blobs (USD)',
 							data: values4844,
 							backgroundColor: (ctx) => {
 								if (ctx.dataIndex === values4844.length - 1) {
