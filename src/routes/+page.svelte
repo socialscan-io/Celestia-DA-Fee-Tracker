@@ -252,7 +252,7 @@
 
 		cumulativeCards[0].value = '$ ' + formatNumber(data.metrics.total_celestia_da_fee_usd, 2);
 		cumulativeCards[0].percent = formatNumber(totalSavingPercent, 2) + '%';
-		cumulativeCards[1].value = '$ ' + formatNumber(data.metrics.total_celestia_da_fee_usd, 2);
+		cumulativeCards[1].value = '$ ' + formatNumber(data.metrics.total_l1_da_fee_usd, 2);
 		cumulativeCards[2].value = '$ ' + formatNumber(data.metrics.total_l1_eip_4844_da_fee_usd, 2);
 		cumulativeCards[3].value = formatNumberToKMB(data.metrics.total_transaction_count);
 		cumulativeCards[4].value = formatBytes(data.metrics.total_data_size);
@@ -265,8 +265,7 @@
 		yesterdayCards[0].value =
 			'$ ' + formatNumber(data.metrics.latest_estimate_celestia_da_fee_usd, 2);
 		yesterdayCards[0].percent = formatNumber(yesterdaySavingPercent, 2) + '%';
-		yesterdayCards[1].value =
-			'$ ' + formatNumber(data.metrics.latest_estimate_celestia_da_fee_usd, 2);
+		yesterdayCards[1].value = '$ ' + formatNumber(data.metrics.latest_l1_da_fee_usd, 2);
 		yesterdayCards[2].value = '$ ' + formatNumber(data.metrics.latest_l1_eip_4844_da_fee_usd, 2);
 		yesterdayCards[3].value = formatNumberToKMB(data.metrics.latest_transaction_count);
 		yesterdayCards[4].value = formatBytes(data.metrics.latest_data_size);
