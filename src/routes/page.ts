@@ -9,6 +9,8 @@ export interface Metrics {
 	latest_l1_da_fee_usd: number;
 	latest_transaction_count: number;
 	latest_estimate_celestia_da_fee_usd: number;
+	latest_l1_eip_4844_da_fee_usd: number;
+	total_l1_eip_4844_da_fee_usd: number;
 }
 
 export interface CalculatedDAFee {
@@ -16,6 +18,7 @@ export interface CalculatedDAFee {
 	estimate_data_size: number;
 	estimate_l1_da_fee_usd: number;
 	estimate_celestia_da_fee_usd: number;
+	estimate_l1_eip_4844_da_fee_usd: number;
 	latest_hour_avg_eth_price: number;
 	latest_hour_avg_tia_price: number;
 }
@@ -27,6 +30,7 @@ export interface DaFeeTracker {
 		data_size: number;
 		estimate_celestia_da_fee_usd: number;
 		transaction_fee_on_l1_usd: number;
+		estimate_eip_4844_da_fee_usd: number;
 	}[];
 	da_fee_usd_per_byte: number;
 	last_updated_at: string;

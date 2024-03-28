@@ -124,6 +124,12 @@
 			color: import.meta.env.VITE_MAIN_COLOR
 		},
 		{
+			name: '4844',
+			value: '--',
+			tooltip: '',
+			color: import.meta.env.VITE_MAIN_COLOR
+		},
+		{
 			name: 'Total Transactions',
 			value: '--'
 		},
@@ -143,6 +149,12 @@
 		},
 		{
 			name: 'Estimated Savings',
+			value: '--',
+			tooltip: '',
+			color: import.meta.env.VITE_MAIN_COLOR
+		},
+		{
+			name: '4844',
 			value: '--',
 			tooltip: '',
 			color: import.meta.env.VITE_MAIN_COLOR
@@ -238,8 +250,9 @@
 		cumulativeCards[1].value =
 			'$ ' +
 			formatNumber(data.metrics.total_l1_da_fee_usd - data.metrics.total_celestia_da_fee_usd, 2);
-		cumulativeCards[2].value = formatNumberToKMB(data.metrics.total_transaction_count);
-		cumulativeCards[3].value = formatBytes(data.metrics.total_data_size);
+		cumulativeCards[2].value = '$ ' + formatNumber(data.metrics.total_l1_eip_4844_da_fee_usd, 2);
+		cumulativeCards[3].value = formatNumberToKMB(data.metrics.total_transaction_count);
+		cumulativeCards[4].value = formatBytes(data.metrics.total_data_size);
 
 		const yesterdaySavingPercent =
 			((data.metrics.latest_l1_da_fee_usd - data.metrics.latest_estimate_celestia_da_fee_usd) /
@@ -255,8 +268,9 @@
 				data.metrics.latest_l1_da_fee_usd - data.metrics.latest_estimate_celestia_da_fee_usd,
 				2
 			);
-		yesterdayCards[2].value = formatNumberToKMB(data.metrics.latest_transaction_count);
-		yesterdayCards[3].value = formatBytes(data.metrics.latest_data_size);
+		yesterdayCards[2].value = '$ ' + formatNumber(data.metrics.latest_l1_eip_4844_da_fee_usd, 2);
+		yesterdayCards[3].value = formatNumberToKMB(data.metrics.latest_transaction_count);
+		yesterdayCards[4].value = formatBytes(data.metrics.latest_data_size);
 	}
 
 	function handleChartData() {
@@ -266,18 +280,21 @@
 
 		const labels: any[] = [];
 		const l1Values: any[] = [];
+		const values4844: any[] = [];
 		const expectedValues: any[] = [];
 
 		data.data.forEach((item) => {
 			labels.push(item.date);
 			l1Values.push(item.transaction_fee_on_l1_usd);
 			expectedValues.push(item.estimate_celestia_da_fee_usd);
+			values4844.push(item.estimate_eip_4844_da_fee_usd);
 		});
 
 		if (myChart) {
 			myChart.data.labels = labels;
 			myChart.data.datasets[0].data = l1Values;
 			myChart.data.datasets[1].data = expectedValues;
+			myChart.data.datasets[2].data = values4844;
 
 			myChart.update();
 		} else {
@@ -314,7 +331,7 @@
 							label: 'Celestia DA Fee (USD)',
 							data: expectedValues,
 							backgroundColor: (ctx) => {
-								if (ctx.dataIndex === l1Values.length - 1) {
+								if (ctx.dataIndex === expectedValues.length - 1) {
 									return '#dddddd';
 								}
 
@@ -334,6 +351,33 @@
 									}
 
 									return '#00B573';
+								}
+							}
+						},
+						{
+							label: '4844 (USD)',
+							data: values4844,
+							backgroundColor: (ctx) => {
+								if (ctx.dataIndex === values4844.length - 1) {
+									return '#dddddd';
+								}
+
+								return '#FEB700';
+							},
+							fill: false,
+							tension: 0.1,
+							borderWidth: 2,
+							segment: {
+								borderDash: (ctx) => {
+									const isLastData = ctx.p1DataIndex === values4844.length - 1;
+									return isLastData ? [5, 5] : undefined;
+								},
+								borderColor: (ctx) => {
+									if (ctx.p1DataIndex === data.data.length - 1) {
+										return '#cccccc';
+									}
+
+									return '#FEB700';
 								}
 							}
 						}
@@ -458,10 +502,10 @@
 	<div class="my-5">
 		<div class="mb-2 font-semibold">Cumulative</div>
 
-		<div class="grid grid-cols-1 gap-5 text-left md:grid-cols-2 lg:grid-cols-4">
+		<div class="grid grid-cols-1 gap-5 text-left md:grid-cols-2 lg:grid-cols-5">
 			{#each cumulativeCards as item, i}
 				<div
-					class="{i <= 1
+					class="{i <= 2
 						? 'fee-related'
 						: ''} relative flex flex-col items-start justify-center gap-y-2.5 rounded-lg border border-[#E6EBEF] p-4"
 				>
@@ -475,7 +519,7 @@
 						{/if}
 					</div>
 
-					{#if i <= 1}
+					{#if i <= 2}
 						<img
 							src={CelestiaPng}
 							class="absolute right-0 top-0 h-full w-auto p-2 opacity-20"
@@ -489,10 +533,10 @@
 
 	<div class="my-5">
 		<div class="mb-2 font-semibold">Yesterday</div>
-		<div class="grid grid-cols-1 gap-5 text-left md:grid-cols-2 lg:grid-cols-4">
+		<div class="grid grid-cols-1 gap-5 text-left md:grid-cols-2 lg:grid-cols-5">
 			{#each yesterdayCards as item, i}
 				<div
-					class="{i <= 1
+					class="{i <= 2
 						? 'fee-related'
 						: ''} relative flex flex-col items-start justify-center gap-y-2.5 rounded-lg border border-[#E6EBEF] p-4"
 				>
@@ -506,7 +550,7 @@
 						{/if}
 					</div>
 
-					{#if i <= 1}
+					{#if i <= 2}
 						<img
 							src={CelestiaPng}
 							class="absolute right-0 top-0 h-full w-auto p-2 opacity-20"
